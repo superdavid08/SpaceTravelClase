@@ -1,5 +1,7 @@
 package elsuper.david.com.spacetravel;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,7 +36,6 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-
         ButterKnife.bind(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -44,13 +45,33 @@ public class ListActivity extends AppCompatActivity {
         marsRoverListingRecycler.setLayoutManager(gridLayoutManager);
         //marsRoverListingRecycler.setLayoutManager(staggeredGridLayoutManager);
 
+        //Para manejar el click en la foto
+        final NasaApodAdapter nasaApodAdapter = new NasaApodAdapter();
+        nasaApodAdapter.setOnItemClickListener(new NasaApodAdapter.OnItemClickListener(){
+            @Override
+            public void onItemClick(Photo photo) {
+                //Log.d("click", photo.getImgSrc());
+                //Toast.makeText(getApplicationContext(),photo.getCamera().getFullName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ListActivity.this,DetailActivity.class);
+                intent.putExtra("key_fullName", photo.getCamera().getFullName());
+                intent.putExtra("key_imgsrc", photo.getImgSrc());
+                intent.putExtra("key_earthDate", photo.getEarthDate());
+                intent.putExtra("key_cameraName", photo.getCamera().getName());
+                startActivity(intent);
+            }
+        });
+
+
+
         ApodService apodService = Data.getRetrofitInstance().create(ApodService.class);
 
         apodService.getTodayMarsRovertWithQuery(400, BuildConfig.NASA_API_KEY).enqueue(new Callback<MarsRovertResponse>() {
             @Override
             public void onResponse(Call<MarsRovertResponse> call, Response<MarsRovertResponse> response) {
 
-                marsRoverListingRecycler.setAdapter(new NasaApodAdapter(response.body().getPhotos()));
+                nasaApodAdapter.setMarsPhotos(response.body().getPhotos());
+                marsRoverListingRecycler.setAdapter(nasaApodAdapter);
+                //marsRoverListingRecycler.setAdapter(new NasaApodAdapter(response.body().getPhotos()));
             }
 
             @Override
