@@ -7,6 +7,7 @@
     android:background="@color/colorRed">
 
     <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/user_image"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:src="@mipmap/ic_launcher"
@@ -14,6 +15,8 @@
         android:layout_margin="15dp"/>
 
     <TextView
+        android:textSize="20sp"
+        android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="David García"
